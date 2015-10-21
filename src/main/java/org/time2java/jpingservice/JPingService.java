@@ -14,9 +14,9 @@ public class JPingService {
         
         th.start();
         
-        while (scanner.hasNextLine()) {
-            String s = scanner.nextLine();
-        }
+//        while (scanner.hasNextLine()) {
+//            String s = scanner.nextLine();
+//        }
         
     }
 
