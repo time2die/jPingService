@@ -12,45 +12,55 @@ public class JPingService {
 
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
-        
+
 //        th.start();
-        
-//        while (scanner.hasNextLine()) {
-//            String s = scanner.nextLine();
-//        }
+        while (scanner.hasNextLine()) {
+            String s = scanner.nextLine();
+            try {
+                Integer i = Integer.valueOf(s);
+                getStatus(i);
+            } catch (NumberFormatException e) {
+                return;
+            }
 
-    HibernateUtil hibernateUtil = new HibernateUtil();
-        
-    Session session = hibernateUtil.getSession();
-    session.beginTransaction();
-
-    HostRequest ya = new HostRequest();
-    ya.setHost("ya");
-    ya.setPort(80);
-    ya.setPath("/");
-    ya.setStatus(RequestStatus.NEW);
-    
-    
-    session.save(ya);
-    session.flush();
-    System.out.println(">"+ya.getId());
-    
-    ya = new HostRequest() ;
-    ya.setHost("google.com");
-    session.save(ya);
-    session.flush();
-    
-    System.out.println(">>"+ya.getId());
-    
-    HostRequest surveyInSession = (HostRequest) session.get(HostRequest.class, ya.getId());
-    System.out.println(surveyInSession.getHost());
-
-    session.getTransaction().commit(); 
-    session.close();
-
-        
+        }
     }
 
+    private static void getStatus(int id) throws Exception {
+        HibernateUtil hibernateUtil = new HibernateUtil();
+        Session session = hibernateUtil.getSession();
+        HostRequest surveyInSession = (HostRequest) session.get(HostRequest.class, Long.valueOf(id));
+        System.out.println(surveyInSession.getHost());
+    }
+
+//    HibernateUtil hibernateUtil = new HibernateUtil();
+//        
+//    Session session = hibernateUtil.getSession();
+//    session.beginTransaction();
+//
+//    HostRequest ya = new HostRequest();
+//    ya.setHost("ya");
+//    ya.setPort(80);
+//    ya.setPath("/");
+//    ya.setStatus(RequestStatus.NEW);
+//    
+//    
+//    session.save(ya);
+//    session.flush();
+//    System.out.println(">"+ya.getId());
+//    
+//    ya = new HostRequest() ;
+//    ya.setHost("google.com");
+//    session.save(ya);
+//    session.flush();
+//    
+//    System.out.println(">>"+ya.getId());
+//    
+//    HostRequest surveyInSession = (HostRequest) session.get(HostRequest.class, ya.getId());
+//    System.out.println(surveyInSession.getHost());
+//
+//    session.getTransaction().commit(); 
+//    session.close();
     static Thread th = new Thread() {
 
         @Override

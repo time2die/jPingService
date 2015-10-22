@@ -17,10 +17,10 @@ public class HostRequest implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private RequestStatus status ;
+    private RequestStatus status = RequestStatus.NEW ;
     private String host ;
-    private Integer port ;
-    private String path ;
+    private Integer port = 80 ;
+    private String path = "\\" ;
     private String reply ;
     private Date date ;
 
