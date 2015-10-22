@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import org.hibernate.Session;
 
 /**
- * @author alex
+ * @author time2java
  */
 public class JPingService {
 
