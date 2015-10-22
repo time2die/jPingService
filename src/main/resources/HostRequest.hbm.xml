@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd">
+
+<hibernate-mapping>
+    <class name="org.time2java.jpingservice.HostRequest" table="hostrequest" dynamic-update="false" dynamic-insert="false">
+        <cache usage="read-write"/>
+        
+        <id name="id" column="ID" type="java.lang.Long">
+            <generator class="increment"></generator>
+        </id>
+        
+        <property name="status" type="org.time2java.jpingservice.RequestStatus" update="true" insert="true" access="property" column="status"/>
+        <property name="host" type="java.lang.String"   update="true" insert="true" access="property" column="host"/>
+        <property name="port" type="java.lang.Integer"  update="true" insert="true" access="property" column="port"/>
+        <property name="path" type="java.lang.String"   update="true" insert="true" access="property" column="path"/>
+        <property name="reply" type="java.lang.String"  update="true" insert="true" access="property" column="reply"/>
+        <property name="date" type="java.util.Date"     update="true" insert="true" access="property" column="date"/>
+        
+    </class>
+</hibernate-mapping>
