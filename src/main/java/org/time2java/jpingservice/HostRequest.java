@@ -1,20 +1,33 @@
 package org.time2java.jpingservice;
 
+import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  *
  * @author time2java
  */
-public class HostRequest {
-    Long id ;
-    RequestStatus status ;
-    String host ;
-    Integer port ;
-    String path ;
-    String reply ;
-    Date date ;
 
+@Entity
+public class HostRequest implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private RequestStatus status ;
+    private String host ;
+    private Integer port ;
+    private String path ;
+    private String reply ;
+    private Date date ;
+
+    public HostRequest() {
+    }
+    
+    
     public void setId(Long id) {
         this.id = id;
     }

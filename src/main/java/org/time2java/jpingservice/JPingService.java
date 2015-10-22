@@ -20,9 +20,9 @@ public class JPingService {
 //        }
 
     HibernateUtil hibernateUtil = new HibernateUtil();
-    hibernateUtil.executeSQLCommand("create table hostrequest (id int,host varchar,port int,path varchar,requeststatus int,reply varchar);");
         
     Session session = hibernateUtil.getSession();
+    session.beginTransaction();
 
     HostRequest ya = new HostRequest();
     ya.setHost("ya");
@@ -45,8 +45,9 @@ public class JPingService {
     HostRequest surveyInSession = (HostRequest) session.get(HostRequest.class, ya.getId());
     System.out.println(surveyInSession.getHost());
 
+    session.getTransaction().commit(); 
     session.close();
-    hibernateUtil.checkData("select * from request");
+
         
     }
 
