@@ -5,23 +5,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HostParams;
-import org.apache.commons.httpclient.params.HttpParams;
 import org.time2java.jpingservice.HostRequest;
 import org.time2java.jpingservice.RequestStatus;
+import org.time2java.jpingservice.dao.HostRequestDAO;
 
 /**
  * @author time2java
  */
 public class NetWorker extends Thread {
 
+    private HostRequestDAO dao ;
+    
     private int MAX_ELEMENTS_PEAK = 100;
     private final ConcurrentLinkedQueue<HostRequest> requestQueue;
     private final HttpClient client;
@@ -29,6 +28,7 @@ public class NetWorker extends Thread {
     public NetWorker(ConcurrentLinkedQueue<HostRequest> queue) {
         requestQueue = queue;
         client = new HttpClient(new MultiThreadedHttpConnectionManager());
+        dao = HostRequestDAO.getInstance() ;
     }
 
     @Override
@@ -60,21 +60,16 @@ public class NetWorker extends Thread {
         method = new GetMethod(url);
         method.setFollowRedirects(true);
 
-        int code = 0;
         String responseBody = null;
 
         try {
-            code = client.executeMethod(method);
+            client.executeMethod(method);
             responseBody = method.getResponseBodyAsString();
         } catch (IOException | IllegalArgumentException ex) {
             processException(ex, url);
         }
 
-        System.out.println("---code: " + code + "\n--response start\n" + responseBody + "\n---response stop");
-
-        request.setDate(new Date());
-        request.setStatus(RequestStatus.FINISHED);
-        request.setReply(responseBody);
+        saveRequestResult(request, responseBody, method.getStatusCode());
     }
 
     private void processException(Exception ex, String url) {
@@ -94,4 +89,11 @@ public class NetWorker extends Thread {
         System.err.println(ex.getMessage());
     }
 
+    private void saveRequestResult(HostRequest request, String responseBody, int code) {
+        request.setDate(new Date());
+        request.setCode(code);
+        request.setReply(responseBody);
+        request.setStatus(RequestStatus.FINISHED);
+        dao.updateRequest(request);
+    }
 }
