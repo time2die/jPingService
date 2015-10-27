@@ -28,15 +28,13 @@ public class NetWorker extends Thread {
     private final HttpClient client;
 
     public NetWorker(ConcurrentLinkedQueue<HostRequest> queue) {
-        System.out.println("start netWorker");
         requestQueue = queue;
         client = new HttpClient(new MultiThreadedHttpConnectionManager());
         dao = HostRequestDAO.getInstance();
     }
 
     @Override
-    public void start() {
-
+    public void run() {
         int iterator = 0;
         List<HostRequest> requestList = new ArrayList<>(MAX_ELEMENTS_PEAK);
 
