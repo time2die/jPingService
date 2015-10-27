@@ -22,87 +22,76 @@ import org.time2java.jpingservice.RequestStatus;
  */
 public class NetWorker extends Thread {
 
-    private int MAX_ELEMENTS_PEAK = 100 ;
-    private final ConcurrentLinkedQueue<HostRequest> requestQueue ;
-    private final HttpClient client ;
-    
-    
+    private int MAX_ELEMENTS_PEAK = 100;
+    private final ConcurrentLinkedQueue<HostRequest> requestQueue;
+    private final HttpClient client;
+
     public NetWorker(ConcurrentLinkedQueue<HostRequest> queue) {
-        requestQueue = queue ;
+        requestQueue = queue;
         client = new HttpClient(new MultiThreadedHttpConnectionManager());
     }
-    
+
     @Override
     public void start() {
-        
-        int iterator = 0 ;
-        List<HostRequest> requestList = new ArrayList<HostRequest>(MAX_ELEMENTS_PEAK) ;
-     
-        
-        //read first n elements from queue
-        while(!requestQueue.isEmpty() && iterator < MAX_ELEMENTS_PEAK){
-            requestList.add(requestQueue.poll()) ;
-            iterator++ ;
-        }
-        
-        iterator = 0 ;
-        
-        requestList.parallelStream().forEach((host) ->{
-            getResponseAndSave(host) ;
-        } );
 
-        
+        int iterator = 0;
+        List<HostRequest> requestList = new ArrayList<HostRequest>(MAX_ELEMENTS_PEAK);
+
+        //read first n elements from queue
+        while (!requestQueue.isEmpty() && iterator < MAX_ELEMENTS_PEAK) {
+            requestList.add(requestQueue.poll());
+            iterator++;
+        }
+
+        iterator = 0;
+
+        requestList.parallelStream().forEach((host) -> {
+            getResponseAndSave(host);
+        });
+
     }
 
     private void getResponseAndSave(HostRequest request) {
         HttpMethod method = null;
 
         //create a method object
-        String url = "http://"+request.getHost()+":"+request.getPort()+request.getPath() ;
-        
+        String url = "http://" + request.getHost() + ":" + request.getPort() + request.getPath();
+
         method = new GetMethod(url);
         method.setFollowRedirects(true);
 
         int code = 0;
         String responseBody = null;
-        
+
         try {
             code = client.executeMethod(method);
-            responseBody = method.getResponseBodyAsString(); 
-        }catch(IOException | IllegalArgumentException ex){
-        
+            responseBody = method.getResponseBodyAsString();
+        } catch (IOException | IllegalArgumentException ex) {
+            processException(ex, url);
         }
-        
-        
-        
-            System.err.println("Illegal url '" + url + "'");
-            System.exit(-2);
-        
-        
+
         System.out.println("---code: " + code + "\n--response start\n" + responseBody + "\n---response stop");
-        
-        
-        request.setDate(new Date()); 
+
+        request.setDate(new Date());
         request.setStatus(RequestStatus.FINISHED);
         request.setReply(responseBody);
     }
-    
-    private void processHttpException(HttpException ex,String url){
-            System.err.println("Http error connecting to '" + url + "'");
+
+    private void processException(Exception ex, String url) {
+        if (ex instanceof IllegalArgumentException) {
+            System.err.println("Illegal url '" + url + "'");
             System.err.println(ex.getMessage());
-            System.exit(-4);
+            return;
+        }
+
+        if (ex instanceof HttpException) {
+            System.err.println("Http error connecting to '" + url + "'");
+
+            return;
+        }
+
+        System.err.println("Unable to connect to '" + url + "'");
+        System.err.println(ex.getMessage());
     }
-    
-    private void processIOException(String url){
-            System.err.println("Unable to connect to '" + url + "'");
-            System.exit(-3);
-    }
-    
-    
-    private void processIllegalException(){
-    
-    }
-    
-    
-    
+
 }
