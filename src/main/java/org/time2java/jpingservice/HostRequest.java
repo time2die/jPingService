@@ -11,23 +11,31 @@ import javax.persistence.Id;
  *
  * @author time2java
  */
-
 @Entity
 public class HostRequest implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private RequestStatus status = RequestStatus.NEW ;
-    private String host ;
-    private Integer port = 80 ;
-    private String path = "\\" ;
-    private String reply ;
-    private Date date ;
+    private RequestStatus status = RequestStatus.NEW;
+    private String host;
+    private Integer port = 80;
+    private String path = "\\";
+    private String reply;
+    private Date date;
+    private int code;
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
 
     public HostRequest() {
     }
-    
-    
+
     public void setId(Long id) {
         this.id = id;
     }
