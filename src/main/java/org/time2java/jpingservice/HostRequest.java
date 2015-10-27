@@ -18,9 +18,9 @@ public class HostRequest implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private RequestStatus status = RequestStatus.NEW;
-    private String host;
+    private String host = "ya.ru";
     private Integer port = 80;
-    private String path = "\\";
+    private String path = "/";
     private String reply;
     private Date date;
     private int code;
