@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
@@ -19,36 +21,50 @@ import org.time2java.jpingservice.dao.HostRequestDAO;
  */
 public class NetWorker extends Thread {
 
-    private HostRequestDAO dao ;
-    
+    private HostRequestDAO dao;
+
     private int MAX_ELEMENTS_PEAK = 100;
     private final ConcurrentLinkedQueue<HostRequest> requestQueue;
     private final HttpClient client;
 
     public NetWorker(ConcurrentLinkedQueue<HostRequest> queue) {
+        System.out.println("start netWorker");
         requestQueue = queue;
         client = new HttpClient(new MultiThreadedHttpConnectionManager());
-        dao = HostRequestDAO.getInstance() ;
+        dao = HostRequestDAO.getInstance();
     }
 
     @Override
     public void start() {
 
         int iterator = 0;
-        List<HostRequest> requestList = new ArrayList<HostRequest>(MAX_ELEMENTS_PEAK);
+        List<HostRequest> requestList = new ArrayList<>(MAX_ELEMENTS_PEAK);
 
-        //read first n elements from queue
-        while (!requestQueue.isEmpty() && iterator < MAX_ELEMENTS_PEAK) {
-            requestList.add(requestQueue.poll());
-            iterator++;
+        while (!this.isInterrupted()) {
+
+            //read first n elements from queue
+            while (!requestQueue.isEmpty() && iterator < MAX_ELEMENTS_PEAK) {
+                requestList.add(requestQueue.poll());
+                iterator++;
+            }
+
+            //process elemetns
+            requestList.parallelStream().forEach((host) -> {
+                getResponseAndSave(host);
+            });
+
+            requestList.clear();
+
+            //need sleep and wait for next elements
+            if (iterator == MAX_ELEMENTS_PEAK) {
+                try {
+                    requestQueue.wait();
+                } catch (InterruptedException ex) {
+                }
+            }
+
+            iterator = 0;
         }
-
-        iterator = 0;
-
-        requestList.parallelStream().forEach((host) -> {
-            getResponseAndSave(host);
-        });
-
     }
 
     private void getResponseAndSave(HostRequest request) {

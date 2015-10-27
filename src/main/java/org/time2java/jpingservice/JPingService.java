@@ -1,14 +1,9 @@
 package org.time2java.jpingservice;
 
-import java.io.IOException;
-
 import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.hibernate.Session;
 
 /**
@@ -17,73 +12,74 @@ import org.hibernate.Session;
 public class JPingService {
 
     public static void main(String[] args) throws Exception {
+        new JPingService().work();
+    }
+
+    public void work() {
+        printHelp();
+        readAndProcessCommands();
+    }
+
+    private void printHelp() {
+        System.out.println("< How to use jPingserver?");
+        System.out.println("< commands:");
+        System.out.println("< ADD");
+        System.out.println("< add host port path");
+        System.out.println("< example: add ya.ru 80 /");
+        System.out.println("< example: add 192.168.1.1 443 api/v2/ping");
+        System.out.println("< SHOW");
+        System.out.println("< show host port path");
+        System.out.println("< example: show ya.ru 80 /");
+        System.out.println("< example: show 192.168.1.1 443 api/v2/ping");
+        System.out.println("< QUIT");
+        System.out.println("< example quit ");
+    }
+
+    private void readAndProcessCommands() {
         Scanner scanner = new Scanner(System.in);
 
-//        th.start();
-//        while (scanner.hasNextLine()) {
-//            String s = scanner.nextLine();
-//            try {
-//                Integer i = Integer.valueOf(s);
-//                getStatus(i);
-//            } catch (NumberFormatException e) {
-//                return;
-//            }
-//
-//        }
-    }
-
-    private static void getStatus(int id) throws Exception {
-        HibernateUtil hibernateUtil = new HibernateUtil();
-        Session session = hibernateUtil.getSession();
-        HostRequest surveyInSession = (HostRequest) session.get(HostRequest.class, Long.valueOf(id));
-        System.out.println(surveyInSession.getHost());
-    }
-
-//    HibernateUtil hibernateUtil = new HibernateUtil();
-//        
-//    Session session = hibernateUtil.getSession();
-//    session.beginTransaction();
-//
-//    HostRequest ya = new HostRequest();
-//    ya.setHost("ya");
-//    ya.setPort(80);
-//    ya.setPath("/");
-//    ya.setStatus(RequestStatus.NEW);
-//    
-//    
-//    session.save(ya);
-//    session.flush();
-//    System.out.println(">"+ya.getId());
-//    
-//    ya = new HostRequest() ;
-//    ya.setHost("google.com");
-//    session.save(ya);
-//    session.flush();
-//    
-//    System.out.println(">>"+ya.getId());
-//    
-//    HostRequest surveyInSession = (HostRequest) session.get(HostRequest.class, ya.getId());
-//    System.out.println(surveyInSession.getHost());
-//
-//    session.getTransaction().commit(); 
-//    session.close();
-    static Thread th = new Thread() {
-
-        @Override
-        public void run() {
-            int i = 0;
-            while (i < 200) {
-                try {
-                    i++;
-                    System.out.println("stop");
-                    System.out.println("the");
-                    System.out.println("fuck");
-                    Thread.sleep(4000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(JPingService.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        boolean continueWork = true;
+        while (continueWork) {
+            System.out.print(">");
+            String s = scanner.nextLine();
+            StringTokenizer st = new StringTokenizer(s);
+            if (st.countTokens() < 1) {
+                printHelp();
+                continue;
             }
+
+            String iter = st.nextToken();
+            switch (iter.toLowerCase()) {
+                case "add":
+                    procesAddComand(st);
+                    break;
+                case "show":
+                    processShowCommand(st);
+                    break;
+                case "quit":
+                    continueWork = false;
+                    break;
+                default:
+                    printHelp();
+                    break;
+            }
+
         }
-    };
+    }
+
+
+
+    private void procesAddComand(StringTokenizer st) {
+        HostRequest hr = parseHostRequest(st);
+        
+    }
+
+    private void processShowCommand(StringTokenizer st) {
+
+    }
+    
+    private HostRequest parseHostRequest(StringTokenizer st ){
+        return new HostRequest() ;
+    }
 
 }

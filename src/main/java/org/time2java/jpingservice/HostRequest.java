@@ -25,6 +25,11 @@ public class HostRequest implements Serializable {
     private Date date;
     private int code;
 
+    @Override
+    public String toString() {
+        return "HostRequest{" + "id=" + id + ", status=" + status + ", host=" + host + ", port=" + port + ", path=" + path + ", reply=" + reply + ", date=" + date + ", code=" + code + '}';
+    }
+
     public int getCode() {
         return code;
     }
