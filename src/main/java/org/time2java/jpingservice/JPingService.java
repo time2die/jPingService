@@ -30,32 +30,6 @@ public class JPingService {
 //            }
 //
 //        }
-        HttpClient client = new HttpClient();
-        HttpMethod method = null;
-
-        String url = "ya.ru" ;
-        //create a method object
-        method = new GetMethod(url);
-        method.setFollowRedirects(true);
-
-        int code = 0;
-        String responseBody = null;
-        try {
-            code = client.executeMethod(method);
-            responseBody = method.getResponseBodyAsString();
-        } catch (HttpException he) {
-            System.err.println("Http error connecting to '" + url + "'");
-            System.err.println(he.getMessage());
-            System.exit(-4);
-        } catch (IOException ioe) {
-            System.err.println("Unable to connect to '" + url + "'");
-            System.exit(-3);
-        } catch (java.lang.IllegalArgumentException ex){
-            System.err.println("Illegal url '" + url + "'");
-            System.exit(-2);
-        }
-        System.out.println("---code: "+code +"\n--response start\n"+ responseBody +"\n---response stop");
-
     }
 
     private static void getStatus(int id) throws Exception {
