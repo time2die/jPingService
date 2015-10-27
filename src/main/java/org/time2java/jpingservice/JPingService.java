@@ -2,9 +2,11 @@ package org.time2java.jpingservice;
 
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.hibernate.Session;
+import org.time2java.jpingservice.threads.NetWorker;
 
 /**
  * @author time2java
@@ -13,6 +15,14 @@ public class JPingService {
 
     public static void main(String[] args) throws Exception {
         new JPingService().work();
+    }
+
+    private ConcurrentLinkedQueue<HostRequest> newHosts;
+    
+    public JPingService() {
+        newHosts = new ConcurrentLinkedQueue<>() ;
+        NetWorker nWorker  = new NetWorker(newHosts) ;
+        nWorker.start();
     }
 
     public void work() {
@@ -71,7 +81,11 @@ public class JPingService {
 
     private void procesAddComand(StringTokenizer st) {
         HostRequest hr = parseHostRequest(st);
+        newHosts.add(hr);
         
+        synchronized(newHosts){
+            newHosts.notify(); 
+        }
     }
 
     private void processShowCommand(StringTokenizer st) {
