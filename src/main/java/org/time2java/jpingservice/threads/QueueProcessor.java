@@ -23,25 +23,24 @@ abstract public class QueueProcessor extends Thread {
         dao = HostRequestDAO.getInstance();
     }
 
-    private boolean work = true;
+    private boolean canWork = true;
 
     @Override
     public void run() {
         int iterator = 0;
         List<HostRequest> requestList = new ArrayList<>(MAX_ELEMENTS_PEAK);
-        while (work) {
-
+        
+        while (canWork) {
             //read first n elements from queue
             while (!requestQueue.isEmpty() && iterator < MAX_ELEMENTS_PEAK) {
-                System.out.println(getName() + ": read");
                 requestList.add(requestQueue.poll());
                 iterator++;
             }
+
             //process elemetns
-//            System.out.println(getName()+": process "+ requestList.size());
-//            requestList.parallelStream().forEach((HostRequest host) -> {
-//                processElement(host);
-//            });
+            requestList.parallelStream().forEach((HostRequest host) -> {
+                processElement(host);
+            });
 
             //ready for new chunk
             requestList.clear();
@@ -49,16 +48,11 @@ abstract public class QueueProcessor extends Thread {
 
             //need sleep and wait for next elements
             if (requestQueue.isEmpty()) {
-
                 synchronized (requestQueue) {
                     try {
-                        System.out.println("> " + getName() + ": start wait \ti:" + this.isInterrupted());
                         requestQueue.wait();
-                        System.out.println("> " + getName() + ": stop wait \ti:" + this.isInterrupted());
-
                     } catch (InterruptedException ex) {
-                        System.out.println(getName() + " interrupted ");
-                        work = false;
+                        canWork = false;
                     }
                 }
             }
@@ -71,6 +65,7 @@ abstract public class QueueProcessor extends Thread {
         if (hr == null) {
             return;
         }
+
         requestQueue.add(hr);
         synchronized (requestQueue) {
             requestQueue.notify();

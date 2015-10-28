@@ -9,11 +9,6 @@ import org.time2java.jpingservice.HostRequest;
  * @author time2java
  */
 public class HostRequestDAO {
-
-    public static void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     Session session;
 
     //double check singlton impl

@@ -18,15 +18,19 @@ public class HostRequest implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private RequestStatus status = RequestStatus.NEW;
-    private String host = "ya.ru";
-    private Integer port = 80;
-    private String path = "/";
-    private String reply;
+    private String host ;
+    private Integer port ;
+    private String path ;
+    private String reply ;
     private Date date;
     private int code;
 
     @Override
     public String toString() {
+        if( reply != null && reply.length() > 50){
+            reply = new String(reply.substring(0, 50)) ;
+        }
+        
         return "HostRequest{" + "id=" + id +", code=" + code + ", status=" + status + ", host=" + host + ", port=" + port + ", path=" + path + ", reply=" + reply + ", date=" + date +'}';
     }
 

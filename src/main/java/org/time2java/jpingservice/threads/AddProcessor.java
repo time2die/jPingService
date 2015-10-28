@@ -41,14 +41,16 @@ public class AddProcessor extends QueueProcessor {
 
         String responseBody = null;
 
+        int code = 500 ; 
         try {
-            client.executeMethod(method);
+            code = client.executeMethod(method);
             responseBody = method.getResponseBodyAsString();
+            method.releaseConnection(); 
         } catch (IOException | IllegalArgumentException ex) {
             processException(ex, url);
         }
 
-        saveRequestResult(request, responseBody, method.getStatusCode());
+        saveRequestResult(request, responseBody, code);
     }
 
     private void processException(Exception ex, String url) {

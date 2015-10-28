@@ -35,18 +35,18 @@ public class JPingService {
     }
 
     private void printHelp() {
-//        System.out.println("< How to use jPingserver?");
-//        System.out.println("< commands:");
-//        System.out.println("< ADD");
-//        System.out.println("< add host port path");
-//        System.out.println("< example: add ya.ru 80 /");
-//        System.out.println("< example: add 192.168.1.1 443 api/v2/ping");
-//        System.out.println("< SHOW");
-//        System.out.println("< show host port path");
-//        System.out.println("< example: show ya.ru 80 /");
-//        System.out.println("< example: show 192.168.1.1 443 api/v2/ping");
-//        System.out.println("< QUIT");
-//        System.out.println("< example quit ");
+        System.out.println("< How to use jPingserver?");
+        System.out.println("< commands:");
+        System.out.println("< ADD");
+        System.out.println("< add host port path");
+        System.out.println("< example: add ya.ru 80 /");
+        System.out.println("< example: add 192.168.1.1 443 api/v2/ping");
+        System.out.println("< SHOW");
+        System.out.println("< show host port path");
+        System.out.println("< example: show ya.ru 80 /");
+        System.out.println("< example: show 192.168.1.1 443 api/v2/ping");
+        System.out.println("< QUIT");
+        System.out.println("< example quit ");
     }
 
     private void readAndProcessCommands() {
@@ -71,19 +71,21 @@ public class JPingService {
                     rs.addHostToQueue((parseHostRequestAndValidate(st)));
                     break;
                 case "quit":
-                    System.out.println("quit");
-                    nWorker.interrupt(); 
-                    rs.interrupt(); 
-                    HostRequestDAO.getInstance().close() ;
-                    continueWork = false;
-                    break;
+                    processQuit(scanner) ;
+                    continueWork = false ;
+                break;
                 default:
                     printHelp();
                     break;
             }
         }
-        scanner.close();
-        System.out.println("stop");
+    }
+    
+    private void processQuit(Scanner sc){
+        nWorker.interrupt();
+        rs.interrupt();
+        HostRequestDAO.getInstance().close();
+        sc.close();
     }
 
     private HostRequest parseHostRequestAndValidate(StringTokenizer st) {
@@ -93,11 +95,12 @@ public class JPingService {
             result.setPort(Integer.valueOf(st.nextToken()));
             result.setPath(st.nextToken());
         } catch (NoSuchElementException | NumberFormatException ex) {
+            ex.printStackTrace(); 
             printHelp();
             return null;
         }
 
-        return new HostRequest();
+        return result;
     }
 
 }
