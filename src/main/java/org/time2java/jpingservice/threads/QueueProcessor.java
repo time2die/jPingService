@@ -49,4 +49,16 @@ abstract public class QueueProcessor extends Thread {
     }
     
      abstract protected  void processElement(HostRequest hr) ;
+     
+     
+     public void addHostToQueue(HostRequest hr){
+       if(hr == null){
+            return ;
+        }
+        requestQueue.add(hr);
+        
+        synchronized(requestQueue){
+            requestQueue.notify(); 
+        }
+     }
 }

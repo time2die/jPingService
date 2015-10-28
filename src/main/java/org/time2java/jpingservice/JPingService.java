@@ -16,16 +16,15 @@ public class JPingService {
         new JPingService().work();
     }
 
-    private ConcurrentLinkedQueue<HostRequest> newHosts;
-    private ConcurrentLinkedQueue<HostRequest> showHosts;
-    
+    private AddProcessor nWorker;
+    private ShowProcessor rs;
+
     public JPingService() {
-        newHosts = new ConcurrentLinkedQueue<>() ;
-        showHosts = new ConcurrentLinkedQueue<>() ;
-        AddProcessor nWorker  = new AddProcessor(newHosts) ;
+        nWorker = new AddProcessor(new ConcurrentLinkedQueue<HostRequest>());
         nWorker.start();
-        
-        ShowProcessor rs = new ShowProcessor(newHosts) ;
+
+        rs = new ShowProcessor(new ConcurrentLinkedQueue<HostRequest>());
+        rs.start();
     }
 
     public void work() {
@@ -64,10 +63,10 @@ public class JPingService {
             String iter = st.nextToken();
             switch (iter.toLowerCase()) {
                 case "add":
-                    procesAddComand(parseHostRequestAndValidate(st));
+                    nWorker.addHostToQueue(parseHostRequestAndValidate(st));
                     break;
                 case "show":
-                    processShowCommand(parseHostRequestAndValidate(st));
+                    rs.addHostToQueue((parseHostRequestAndValidate(st)));
                     break;
                 case "quit":
                     continueWork = false;
@@ -80,35 +79,17 @@ public class JPingService {
         }
     }
 
-    private HostRequest parseHostRequestAndValidate(StringTokenizer st ){
-        HostRequest result = new HostRequest() ;
-        try{
+    private HostRequest parseHostRequestAndValidate(StringTokenizer st) {
+        HostRequest result = new HostRequest();
+        try {
             result.setHost(st.nextToken());
             result.setPort(Integer.valueOf(st.nextToken()));
             result.setPath(st.nextToken());
-        }catch(NoSuchElementException | NumberFormatException ex){
-            return null ;
+        } catch (NoSuchElementException | NumberFormatException ex) {
+            return null;
         }
-        
-        return new HostRequest() ;
-    }
 
-    private void procesAddComand(HostRequest hr) {
-        if(hr == null){
-            return ;
-        }
-        newHosts.add(hr);
-        
-        synchronized(newHosts){
-            newHosts.notify(); 
-        }
+        return new HostRequest();
     }
-
-    private void processShowCommand(HostRequest hr) {
-        if(hr == null){
-            return ;
-        }
-    }
-    
 
 }
