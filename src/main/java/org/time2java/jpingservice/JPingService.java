@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.time2java.jpingservice.dao.HostRequestDAO;
 import org.time2java.jpingservice.threads.AddProcessor;
 import org.time2java.jpingservice.threads.ShowProcessor;
 
@@ -72,6 +73,8 @@ public class JPingService {
                 case "quit":
                     System.out.println("quit");
                     nWorker.interrupt(); 
+                    rs.interrupt(); 
+                    HostRequestDAO.getInstance().close() ;
                     continueWork = false;
                     break;
                 default:

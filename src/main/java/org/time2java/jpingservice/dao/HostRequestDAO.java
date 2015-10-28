@@ -10,6 +10,10 @@ import org.time2java.jpingservice.HostRequest;
  */
 public class HostRequestDAO {
 
+    public static void stop() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     Session session;
 
     //double check singlton impl
@@ -27,9 +31,9 @@ public class HostRequestDAO {
         }
         return localInstance;
     }
-
+    private SessionFactory sessionFactory ;
     public HostRequestDAO() {
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+         sessionFactory = new Configuration().configure().buildSessionFactory();
         session = sessionFactory.openSession();
     }
 
@@ -44,6 +48,10 @@ public class HostRequestDAO {
     private void getStatus(int id) throws Exception {
         HostRequest surveyInSession = (HostRequest) session.get(HostRequest.class, Long.valueOf(id));
         System.out.println(surveyInSession.getHost());
+    }
+    
+    public void close(){
+        sessionFactory.close();
     }
 
 
