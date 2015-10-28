@@ -22,7 +22,7 @@ public class JPingService {
 
     public JPingService() {
         nWorker = new AddProcessor(new ConcurrentLinkedQueue<>());
-//        nWorker.start();
+        nWorker.start();
 
         rs = new ShowProcessor(new ConcurrentLinkedQueue<>());
         rs.start();

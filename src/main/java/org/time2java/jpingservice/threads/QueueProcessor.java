@@ -33,7 +33,7 @@ abstract public class QueueProcessor extends Thread {
 
             //read first n elements from queue
             while (!requestQueue.isEmpty() && iterator < MAX_ELEMENTS_PEAK) {
-                System.out.println(getName()+": read");
+                System.out.println(getName() + ": read");
                 requestList.add(requestQueue.poll());
                 iterator++;
             }
@@ -49,16 +49,17 @@ abstract public class QueueProcessor extends Thread {
 
             //need sleep and wait for next elements
             if (requestQueue.isEmpty()) {
-                try {
-                    synchronized (requestQueue) {
+
+                synchronized (requestQueue) {
+                    try {
                         System.out.println("> " + getName() + ": start wait \ti:" + this.isInterrupted());
                         requestQueue.wait();
                         System.out.println("> " + getName() + ": stop wait \ti:" + this.isInterrupted());
+
+                    } catch (InterruptedException ex) {
+                        System.out.println(getName() + " interrupted ");
+                        work = false;
                     }
-                } catch (InterruptedException ex) {
-                    System.out.println(getName() + " interrupted ");
-                    work = false;
-                     continue;
                 }
             }
         }
