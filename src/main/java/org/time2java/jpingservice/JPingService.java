@@ -1,12 +1,11 @@
 package org.time2java.jpingservice;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.hibernate.Session;
-import org.time2java.jpingservice.threads.NetWorker;
+import org.time2java.jpingservice.threads.AddProcessor;
+import org.time2java.jpingservice.threads.ShowProcessor;
 
 /**
  * @author time2java
@@ -18,11 +17,15 @@ public class JPingService {
     }
 
     private ConcurrentLinkedQueue<HostRequest> newHosts;
+    private ConcurrentLinkedQueue<HostRequest> showHosts;
     
     public JPingService() {
         newHosts = new ConcurrentLinkedQueue<>() ;
-        NetWorker nWorker  = new NetWorker(newHosts) ;
+        showHosts = new ConcurrentLinkedQueue<>() ;
+        AddProcessor nWorker  = new AddProcessor(newHosts) ;
         nWorker.start();
+        
+        ShowProcessor rs = new ShowProcessor(newHosts) ;
     }
 
     public void work() {
@@ -50,7 +53,7 @@ public class JPingService {
 
         boolean continueWork = true;
         while (continueWork) {
-            System.out.print(">");
+            System.out.print("> ");
             String s = scanner.nextLine();
             StringTokenizer st = new StringTokenizer(s);
             if (st.countTokens() < 1) {
@@ -61,10 +64,10 @@ public class JPingService {
             String iter = st.nextToken();
             switch (iter.toLowerCase()) {
                 case "add":
-                    procesAddComand(st);
+                    procesAddComand(parseHostRequestAndValidate(st));
                     break;
                 case "show":
-                    processShowCommand(st);
+                    processShowCommand(parseHostRequestAndValidate(st));
                     break;
                 case "quit":
                     continueWork = false;
@@ -77,10 +80,23 @@ public class JPingService {
         }
     }
 
+    private HostRequest parseHostRequestAndValidate(StringTokenizer st ){
+        HostRequest result = new HostRequest() ;
+        try{
+            result.setHost(st.nextToken());
+            result.setPort(Integer.valueOf(st.nextToken()));
+            result.setPath(st.nextToken());
+        }catch(NoSuchElementException | NumberFormatException ex){
+            return null ;
+        }
+        
+        return new HostRequest() ;
+    }
 
-
-    private void procesAddComand(StringTokenizer st) {
-        HostRequest hr = parseHostRequest(st);
+    private void procesAddComand(HostRequest hr) {
+        if(hr == null){
+            return ;
+        }
         newHosts.add(hr);
         
         synchronized(newHosts){
@@ -88,12 +104,11 @@ public class JPingService {
         }
     }
 
-    private void processShowCommand(StringTokenizer st) {
-
+    private void processShowCommand(HostRequest hr) {
+        if(hr == null){
+            return ;
+        }
     }
     
-    private HostRequest parseHostRequest(StringTokenizer st ){
-        return new HostRequest() ;
-    }
 
 }

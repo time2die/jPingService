@@ -36,6 +36,10 @@ public class HostRequestDAO {
     public void updateRequest(HostRequest request) {
         System.out.println("save: "+ request);
     }
+    
+    public HostRequest getRequest(HostRequest lookingFor){
+        return new HostRequest() ;
+    }
 
     private void getStatus(int id) throws Exception {
         HostRequest surveyInSession = (HostRequest) session.get(HostRequest.class, Long.valueOf(id));
