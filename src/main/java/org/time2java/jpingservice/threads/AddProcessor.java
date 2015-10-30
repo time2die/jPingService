@@ -1,11 +1,8 @@
 package org.time2java.jpingservice.threads;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
@@ -13,7 +10,6 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.time2java.jpingservice.HostRequest;
 import org.time2java.jpingservice.RequestStatus;
-import org.time2java.jpingservice.dao.HostRequestDAO;
 
 /**
  * @author time2java
@@ -75,6 +71,6 @@ public class AddProcessor extends QueueProcessor {
         request.setCode(code);
         request.setReply(responseBody);
         request.setStatus(RequestStatus.FINISHED);
-        dao.updateRequest(request);
+        dao.addOrUpdateRequest(request);
     }
 }
