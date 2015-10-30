@@ -15,8 +15,13 @@ public class ShowProcessor extends QueueProcessor{
 
     @Override
     protected void processElement(HostRequest hr) {
-//        HostRequest needShow = dao.getRequest(hr) ;
-//        System.out.println("\n< code: "+ hr.getCode() +" date: "+ hr.getDate()+ "\t" +hr.getHost()+":"+hr.getPort()+hr.getPath()+"\t response: "+ hr.getReply());
+        HostRequest needShow = dao.getRequest(hr) ;
+        if(needShow != null){
+            System.out.println("< "+ needShow);
+        }else{
+                System.out.println("< code 404");
+        }
+        System.out.print("< ");
     }
 
 }
