@@ -9,6 +9,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.time2java.jpingservice.HostRequest;
+import org.time2java.jpingservice.PropertiesHolder;
 import org.time2java.jpingservice.RequestStatus;
 import org.time2java.jpingservice.StatisticHandler;
 
@@ -22,7 +23,7 @@ public class AddProcessor extends QueueProcessor {
     public AddProcessor(ConcurrentLinkedQueue<HostRequest> queue) {
         super("NetWorker", queue);
 
-        final int timeout = 1; //1s
+        final int timeout = PropertiesHolder.getIntProperties("http.timeout", 1); //1s
         client = new HttpClient(new MultiThreadedHttpConnectionManager());
 
         client.getParams().setParameter("http.socket.timeout", timeout * 1000);
