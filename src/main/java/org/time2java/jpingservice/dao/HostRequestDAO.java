@@ -70,8 +70,6 @@ public class HostRequestDAO {
         }
 
         tx.commit();
-        session.flush();
-
     }
 
     public HostRequest getAddedRequest(HostRequest lookingFor) {
