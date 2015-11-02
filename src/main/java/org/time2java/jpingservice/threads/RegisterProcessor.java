@@ -42,10 +42,5 @@ public class RegisterProcessor extends QueueProcessor {
         
         return true ;
     }
-    
-    @Override
-    public void addAll(List<HostRequest> toAdd) {
-        ap.addAll(toAdd);
-    }
 
 }
