@@ -6,6 +6,7 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.time2java.jpingservice.dao.HostRequestDAO;
 import org.time2java.jpingservice.threads.AddProcessor;
+import org.time2java.jpingservice.threads.RegisterProcessor;
 import org.time2java.jpingservice.threads.ShowProcessor;
 
 /**
@@ -19,6 +20,7 @@ public class JPingService {
 
     private AddProcessor nWorker;
     private ShowProcessor rs;
+    private RegisterProcessor rp ;
 
     public JPingService() {
         nWorker = new AddProcessor(new ConcurrentLinkedQueue<>());
@@ -26,6 +28,9 @@ public class JPingService {
 
         rs = new ShowProcessor(new ConcurrentLinkedQueue<>());
         rs.start();
+        
+        rp = new RegisterProcessor(new ConcurrentLinkedQueue(), nWorker) ;
+        rp.start();
     }
 
     public void work() {
@@ -64,7 +69,7 @@ public class JPingService {
             String iter = st.nextToken();
             switch (iter.toLowerCase()) {
                 case "add":
-                    nWorker.addHostToQueue(parseHostRequestAndValidate(st));
+                    rp.addHostToQueue(parseHostRequestAndValidate(st));
                     break;
                 case "show":
                     rs.addHostToQueue((parseHostRequestAndValidate(st)));
@@ -101,5 +106,4 @@ public class JPingService {
 
         return result;
     }
-
 }
