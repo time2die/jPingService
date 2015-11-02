@@ -59,19 +59,19 @@ public class AddProcessor extends QueueProcessor {
 
     private void processException(Exception ex, String url) {
         if (ex instanceof IllegalArgumentException) {
-            System.err.println("Illegal url '" + url + "'");
-            System.err.println(ex.getMessage());
+            System.err.println("error< Illegal url '" + url + "'");
+            System.err.println("error< "+ex.getMessage());
             return;
         }
 
         if (ex instanceof HttpException) {
-            System.err.println("Http error connecting to '" + url + "'");
+            System.err.println("error< Http error connecting to '" + url + "'");
 
             return;
         }
 
-        System.err.println("Unable to connect to '" + url + "'");
-        System.err.println(ex.getMessage());
+        System.err.println("error< Unable to connect to '" + url + "'");
+        System.err.println("error< "+ex.getMessage());
     }
 
     private void prepareRequest(HostRequest request, String responseBody, int code) {
