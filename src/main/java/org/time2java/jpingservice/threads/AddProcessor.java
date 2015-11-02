@@ -8,7 +8,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.time2java.jpingservice.HostRequest;
 import org.time2java.jpingservice.RequestStatus;
 
@@ -24,8 +23,11 @@ public class AddProcessor extends QueueProcessor {
         
         final int timeout = 1 ; //1s
         client = new HttpClient(new MultiThreadedHttpConnectionManager());
-        client.getParams().setSoTimeout(timeout*1000);
-        client.getParams().setConnectionManagerTimeout(timeout*1000);
+        
+        client.getParams().setParameter("http.socket.timeout", timeout * 1000);
+        client.getParams().setParameter("http.connection.timeout", timeout * 1000);
+        client.getParams().setParameter("http.connection-manager.timeout", timeout * 1000L);
+        client.getParams().setParameter("http.protocol.head-body-timeout", timeout * 1000);
     }
 
 
