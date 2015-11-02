@@ -8,7 +8,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.time2java.jpingservice.HostRequest;
 import org.time2java.jpingservice.RequestStatus;
 
@@ -21,37 +20,39 @@ public class AddProcessor extends QueueProcessor {
 
     public AddProcessor(ConcurrentLinkedQueue<HostRequest> queue) {
         super("NetWorker", queue);
-        
-        final int timeout = 1 ; //1s
+
+        final int timeout = 1; //1s
         client = new HttpClient(new MultiThreadedHttpConnectionManager());
-        client.getParams().setSoTimeout(timeout*1000);
-        client.getParams().setConnectionManagerTimeout(timeout*1000);
+
+        client.getParams().setParameter("http.socket.timeout", timeout * 1000);
+        client.getParams().setParameter("http.connection.timeout", timeout * 1000);
+        client.getParams().setParameter("http.connection-manager.timeout", timeout * 1000L);
+        client.getParams().setParameter("http.protocol.head-body-timeout", timeout * 1000);
     }
-
-
+    
     @Override
     protected void processElement(HostRequest request) {
-        HttpMethod method = null;
-
+        
         //create a method object
+        HttpMethod method = null;
         String url = "http://" + request.getHost() + ":" + request.getPort() + request.getPath();
 
         method = new GetMethod(url);
         method.setFollowRedirects(true);
-        
 
         String responseBody = null;
 
-        int code = 500 ; 
+        int code = 500;
         try {
             code = client.executeMethod(method);
             responseBody = method.getResponseBodyAsString();
-            method.releaseConnection(); 
+            method.releaseConnection();
         } catch (IOException | IllegalArgumentException ex) {
             processException(ex, url);
         }
 
-        saveRequestResult(request, responseBody, code);
+        prepareRequest(request, responseBody, code);
+        saveRequestResult(request);
     }
 
     private void processException(Exception ex, String url) {
@@ -71,11 +72,14 @@ public class AddProcessor extends QueueProcessor {
         System.err.println(ex.getMessage());
     }
 
-    private void saveRequestResult(HostRequest request, String responseBody, int code) {
+    private void prepareRequest(HostRequest request, String responseBody, int code) {
         request.setDate(new Date());
         request.setCode(code);
         request.setReply(responseBody);
         request.setStatus(RequestStatus.FINISHED);
+    }
+
+    private void saveRequestResult(HostRequest request) {
         dao.addOrUpdateRequest(request);
     }
 }

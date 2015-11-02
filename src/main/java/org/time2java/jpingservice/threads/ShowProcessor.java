@@ -2,6 +2,7 @@ package org.time2java.jpingservice.threads;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.time2java.jpingservice.HostRequest;
+import org.time2java.jpingservice.RequestStatus;
 
 /**
  * @author time2java
@@ -15,6 +16,8 @@ public class ShowProcessor extends QueueProcessor{
 
     @Override
     protected void processElement(HostRequest hr) {
+        hr.setStatus(RequestStatus.FINISHED);
+        
         HostRequest needShow = dao.getRequest(hr) ;
         if(needShow != null){
             System.out.println("< "+ needShow);

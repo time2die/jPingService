@@ -17,7 +17,7 @@ public class HostRequest implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private RequestStatus status = RequestStatus.NEW;
+    private RequestStatus status ;
     private String host ;
     private Integer port ;
     private String path ;
@@ -105,5 +105,9 @@ public class HostRequest implements Serializable {
 
     public Date getDate() {
         return date;
+    }
+
+    public String toLittleString() {
+        return host+":"+port+path ;
     }
 }
