@@ -1,8 +1,10 @@
 package org.time2java.jpingservice.threads;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.time2java.jpingservice.HostRequest;
 import org.time2java.jpingservice.RequestStatus;
+import org.time2java.jpingservice.StatisticHandler;
 
 /**
  * @author time2java
@@ -24,7 +26,7 @@ public class RegisterProcessor extends QueueProcessor {
                 return ;
             }
             
-            
+            StatisticHandler.addElement(); 
             ap.addHostToQueue(hr);
         }
 
@@ -39,6 +41,11 @@ public class RegisterProcessor extends QueueProcessor {
         System.out.println("< take in work: "+ request.toLittleString());
         
         return true ;
+    }
+    
+    @Override
+    public void addAll(List<HostRequest> toAdd) {
+        ap.addAll(toAdd);
     }
 
 }

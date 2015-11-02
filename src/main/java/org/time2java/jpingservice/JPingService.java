@@ -1,5 +1,6 @@
 package org.time2java.jpingservice;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -31,6 +32,8 @@ public class JPingService {
         
         rp = new RegisterProcessor(new ConcurrentLinkedQueue(), nWorker) ;
         rp.start();
+        
+        initAfterShutDown() ;
     }
 
     public void work() {
@@ -39,18 +42,18 @@ public class JPingService {
     }
 
     private void printHelp() {
-        System.out.println("< How to use jPingserver?");
-        System.out.println("< commands:");
-        System.out.println("< ADD");
-        System.out.println("< add host port path");
-        System.out.println("< example: add ya.ru 80 /");
-        System.out.println("< example: add 192.168.1.1 443 api/v2/ping");
-        System.out.println("< SHOW");
-        System.out.println("< show host port path");
-        System.out.println("< example: show ya.ru 80 /");
-        System.out.println("< example: show 192.168.1.1 443 api/v2/ping");
-        System.out.println("< QUIT");
-        System.out.println("< example quit ");
+        System.out.println("help < How to use jPingserver?");
+        System.out.println("help < commands:");
+        System.out.println("help < ADD");
+        System.out.println("help < add host port path");
+        System.out.println("help < example: add ya.ru 80 /");
+        System.out.println("help < example: add 192.168.1.1 443 api/v2/ping");
+        System.out.println("help < SHOW");
+        System.out.println("help < show host port path");
+        System.out.println("help < example: show ya.ru 80 /");
+        System.out.println("help < example: show 192.168.1.1 443 api/v2/ping");
+        System.out.println("help < QUIT");
+        System.out.println("help < example quit ");
     }
 
     private void readAndProcessCommands() {
@@ -105,5 +108,11 @@ public class JPingService {
         }
 
         return result;
+    }
+
+    private void initAfterShutDown() {
+        List<HostRequest> list = HostRequestDAO.getInstance().getAllAdededRequest() ;
+        System.out.println("<-->\tadd after reload: "+ list.size());
+        rp.addAll(list) ;
     }
 }

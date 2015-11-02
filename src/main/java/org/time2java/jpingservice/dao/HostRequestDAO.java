@@ -38,10 +38,10 @@ public class HostRequestDAO {
     public HostRequestDAO() {
         sessionFactory = new Configuration().configure().buildSessionFactory();
         
+        session = sessionFactory.openSession();
     }
 
     public void addOrUpdateRequest(HostRequest request) {
-        session = sessionFactory.openSession();
         
         HostRequest oldRequest = null;
         try {
@@ -74,11 +74,11 @@ public class HostRequestDAO {
 //        session.saveOrUpdate(request);
         tx.commit();
         session.flush();
-        session.close() ;
+//        session.close() ;
     }
 
     public HostRequest getAddedRequest(HostRequest lookingFor) {
-        session = sessionFactory.openSession();
+//        session = sessionFactory.openSession();
         HostRequest oldRequest = null;
         try {
             oldRequest = (HostRequest) session.createCriteria(HostRequest.class)
@@ -90,7 +90,7 @@ public class HostRequestDAO {
         } catch (HibernateException ex) {
             ex.printStackTrace();
         }finally{
-            session.close(); 
+//            session.close(); 
         }
 
         return oldRequest;
@@ -98,17 +98,17 @@ public class HostRequestDAO {
 
     public List<HostRequest> getAllAdededRequest() {
         try {
-            session = sessionFactory.openSession();
+//            session = sessionFactory.openSession();
             return (List<HostRequest>) session.createCriteria(HostRequest.class)
                     .add(Restrictions.eq("status", RequestStatus.ADDED))
-                    .addOrder(Order.desc("date"));
+                    .addOrder(Order.desc("date")).list();
         } finally {
-            session.close();
+//            session.close();
         }
     }
 
     public HostRequest getRequest(HostRequest lookingFor) {
-        session = sessionFactory.openSession() ;
+//        session = sessionFactory.openSession() ;
         HostRequest oldRequest = null;
         try {
             oldRequest = (HostRequest) session.createCriteria(HostRequest.class).add(Restrictions.eq("host", lookingFor.getHost()))
@@ -119,7 +119,7 @@ public class HostRequestDAO {
         } catch (HibernateException ex) {
             ex.printStackTrace();
         }finally{
-            session.close();
+//            session.close();
         }
 
         return oldRequest;
@@ -131,7 +131,7 @@ public class HostRequestDAO {
 //    }
 
     public void close() {
-        if(session.isConnected()){
+        if(session != null &&  session.isConnected()){
             session.close();
         }
         
