@@ -5,7 +5,11 @@ package org.time2java.jpingservice;
  */
 public class StatisticHandler {
     private static long elementsWasAded = 0 ;
-    private static long elementsWasProcessed = 0 ;
+    private static long elementsWasProcessed = 1 ;
+    
+    
+    private static long processAnywayFirstelements = 2 ;
+    
     
     public static void addElement(){
         elementsWasAded ++ ;
@@ -20,6 +24,20 @@ public class StatisticHandler {
     }
     
     public static boolean canContinueTakeRequest(){
+        if(elementsWasProcessed == 0 || elementsWasProcessed == 0 ){
+            return false ;
+        }
+        
+        if(elementsWasAded < processAnywayFirstelements){
+            return true ;
+        }
+
+        System.out.println("k :"+ elementsWasProcessed / elementsWasAded);
+        
+        if( elementsWasProcessed / elementsWasAded < 0.5){
+            return false ;
+        }
+        
         return true ;
     }
 }
