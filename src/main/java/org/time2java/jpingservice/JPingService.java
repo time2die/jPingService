@@ -81,10 +81,10 @@ public class JPingService {
     }
     
     private void processQuit(Scanner sc){
+        sc.close();
         nWorker.interrupt();
         rs.interrupt();
         HostRequestDAO.getInstance().close();
-        sc.close();
     }
 
     private HostRequest parseHostRequestAndValidate(StringTokenizer st) {
