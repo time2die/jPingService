@@ -22,7 +22,7 @@ public class JPingService {
 
     private AddProcessor nWorker;
     private ShowProcessor rs;
-    private RegisterProcessor rp ;
+    private RegisterProcessor rp;
 
     public JPingService() {
         nWorker = new AddProcessor(new ConcurrentLinkedQueue<>());
@@ -30,11 +30,11 @@ public class JPingService {
 
         rs = new ShowProcessor(new ConcurrentLinkedQueue<>());
         rs.start();
-        
-        rp = new RegisterProcessor(new ConcurrentLinkedQueue(), nWorker) ;
+
+        rp = new RegisterProcessor(new ConcurrentLinkedQueue(), nWorker);
         rp.start();
-        
-        initAfterShutDown() ;
+
+        initAfterShutDown();
     }
 
     public void work() {
@@ -73,26 +73,40 @@ public class JPingService {
             String iter = st.nextToken();
             switch (iter.toLowerCase()) {
                 case "add":
-                    rp.addHostToQueue(parseHostRequestAndValidate(st));
+                    if (StatisticHandler.canContinueTakeRequest()) {
+                        rp.addHostToQueue(parseHostRequestAndValidate(st));
+                    } else {
+                        System.out.println("Eror< Can't take new request now, sorry.");
+                        System.out.println("< code 504");
+                    }
                     break;
                 case "show":
                     rs.addHostToQueue((parseHostRequestAndValidate(st)));
                     break;
                 case "quit":
-                    processQuit(scanner) ;
-                    continueWork = false ;
-                break;
+                    processQuit(scanner);
+                    continueWork = false;
+                    break;
                 default:
                     printHelp();
                     break;
             }
         }
     }
-    
-    private void processQuit(Scanner sc){
+
+    private void processQuit(Scanner sc) {
         sc.close();
         nWorker.interrupt();
         rs.interrupt();
+        rp.interrupt();
+
+        try {
+            nWorker.join();
+            rp.join();
+            rs.join();
+        } catch (InterruptedException ex) {
+        }
+
         HostRequestDAO.getInstance().close();
     }
 
@@ -103,7 +117,7 @@ public class JPingService {
             result.setPort(Integer.valueOf(st.nextToken()));
             result.setPath(st.nextToken());
         } catch (NoSuchElementException | NumberFormatException ex) {
-            ex.printStackTrace(); 
+            ex.printStackTrace();
             printHelp();
             return null;
         }
@@ -112,8 +126,8 @@ public class JPingService {
     }
 
     private void initAfterShutDown() {
-        List<HostRequest> list = HostRequestDAO.getInstance().getAllAdededRequest() ;
-        System.out.println("<-->\tadd after reload: "+ list.size());
-        rp.addAll(list) ;
+        List<HostRequest> list = HostRequestDAO.getInstance().getAllAdededRequest();
+        nWorker.addAll(list);
     }
+
 }
