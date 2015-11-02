@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.time2java.jpingservice.HostRequest;
+import org.time2java.jpingservice.StatisticHandler;
 import org.time2java.jpingservice.dao.HostRequestDAO;
 
 /**
@@ -29,7 +30,7 @@ abstract public class QueueProcessor extends Thread {
     public void run() {
         int iterator = 0;
         List<HostRequest> requestList = new ArrayList<>(MAX_ELEMENTS_PEAK);
-        
+
         while (canWork) {
             //read first n elements from queue
             while (!requestQueue.isEmpty() && iterator < MAX_ELEMENTS_PEAK) {
@@ -67,6 +68,17 @@ abstract public class QueueProcessor extends Thread {
         }
 
         requestQueue.add(hr);
+        synchronized (requestQueue) {
+            requestQueue.notify();
+        }
+    }
+
+    public void addAll(List<HostRequest> toAdd) {
+        if(toAdd !=  null ){
+            StatisticHandler.addElements(toAdd.size());
+        }
+        
+        requestQueue.addAll(toAdd);
         synchronized (requestQueue) {
             requestQueue.notify();
         }

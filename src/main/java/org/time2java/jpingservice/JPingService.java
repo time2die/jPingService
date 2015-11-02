@@ -1,6 +1,8 @@
 package org.time2java.jpingservice;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -20,7 +22,7 @@ public class JPingService {
 
     private AddProcessor nWorker;
     private ShowProcessor rs;
-    private RegisterProcessor rp ;
+    private RegisterProcessor rp;
 
     public JPingService() {
         nWorker = new AddProcessor(new ConcurrentLinkedQueue<>());
@@ -28,9 +30,11 @@ public class JPingService {
 
         rs = new ShowProcessor(new ConcurrentLinkedQueue<>());
         rs.start();
-        
-        rp = new RegisterProcessor(new ConcurrentLinkedQueue(), nWorker) ;
+
+        rp = new RegisterProcessor(new ConcurrentLinkedQueue(), nWorker);
         rp.start();
+
+        initAfterShutDown();
     }
 
     public void work() {
@@ -39,18 +43,18 @@ public class JPingService {
     }
 
     private void printHelp() {
-        System.out.println("< How to use jPingserver?");
-        System.out.println("< commands:");
-        System.out.println("< ADD");
-        System.out.println("< add host port path");
-        System.out.println("< example: add ya.ru 80 /");
-        System.out.println("< example: add 192.168.1.1 443 api/v2/ping");
-        System.out.println("< SHOW");
-        System.out.println("< show host port path");
-        System.out.println("< example: show ya.ru 80 /");
-        System.out.println("< example: show 192.168.1.1 443 api/v2/ping");
-        System.out.println("< QUIT");
-        System.out.println("< example quit ");
+        System.out.println("help < How to use jPingserver?");
+        System.out.println("help < commands:");
+        System.out.println("help < ADD");
+        System.out.println("help < add host port path");
+        System.out.println("help < example: add ya.ru 80 /");
+        System.out.println("help < example: add 192.168.1.1 443 api/v2/ping");
+        System.out.println("help < SHOW");
+        System.out.println("help < show host port path");
+        System.out.println("help < example: show ya.ru 80 /");
+        System.out.println("help < example: show 192.168.1.1 443 api/v2/ping");
+        System.out.println("help < QUIT");
+        System.out.println("help < example quit ");
     }
 
     private void readAndProcessCommands() {
@@ -69,26 +73,40 @@ public class JPingService {
             String iter = st.nextToken();
             switch (iter.toLowerCase()) {
                 case "add":
-                    rp.addHostToQueue(parseHostRequestAndValidate(st));
+                    if (StatisticHandler.canContinueTakeRequest()) {
+                        rp.addHostToQueue(parseHostRequestAndValidate(st));
+                    } else {
+                        System.out.println("Eror< Can't take new request now, sorry.");
+                        System.out.println("< code 504");
+                    }
                     break;
                 case "show":
                     rs.addHostToQueue((parseHostRequestAndValidate(st)));
                     break;
                 case "quit":
-                    processQuit(scanner) ;
-                    continueWork = false ;
-                break;
+                    processQuit(scanner);
+                    continueWork = false;
+                    break;
                 default:
                     printHelp();
                     break;
             }
         }
     }
-    
-    private void processQuit(Scanner sc){
+
+    private void processQuit(Scanner sc) {
         sc.close();
         nWorker.interrupt();
         rs.interrupt();
+        rp.interrupt();
+
+        try {
+            nWorker.join();
+            rp.join();
+            rs.join();
+        } catch (InterruptedException ex) {
+        }
+
         HostRequestDAO.getInstance().close();
     }
 
@@ -99,11 +117,17 @@ public class JPingService {
             result.setPort(Integer.valueOf(st.nextToken()));
             result.setPath(st.nextToken());
         } catch (NoSuchElementException | NumberFormatException ex) {
-            ex.printStackTrace(); 
+            ex.printStackTrace();
             printHelp();
             return null;
         }
 
         return result;
     }
+
+    private void initAfterShutDown() {
+        List<HostRequest> list = HostRequestDAO.getInstance().getAllAdededRequest();
+        nWorker.addAll(list);
+    }
+
 }

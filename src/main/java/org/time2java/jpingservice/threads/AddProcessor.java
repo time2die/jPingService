@@ -10,6 +10,7 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.time2java.jpingservice.HostRequest;
 import org.time2java.jpingservice.RequestStatus;
+import org.time2java.jpingservice.StatisticHandler;
 
 /**
  * @author time2java
@@ -81,5 +82,7 @@ public class AddProcessor extends QueueProcessor {
 
     private void saveRequestResult(HostRequest request) {
         dao.addOrUpdateRequest(request);
+        StatisticHandler.elementsProcessd();
     }
+
 }
