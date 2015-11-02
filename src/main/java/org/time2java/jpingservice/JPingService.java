@@ -1,6 +1,5 @@
 package org.time2java.jpingservice;
 
-import java.lang.invoke.MethodHandles;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
