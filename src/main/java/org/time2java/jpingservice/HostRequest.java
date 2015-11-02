@@ -25,6 +25,12 @@ public class HostRequest implements Serializable {
     private Date date;
     private int code;
 
+    public HostRequest(String host, int port, String path) {
+        this.host  = host ;
+        this.port = port ;
+        this.path = path ;
+    }
+
     @Override
     public String toString() {
         if( reply != null && reply.length() > 50){
