@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.time2java.jpingservice.HostRequest;
+import org.time2java.jpingservice.PropertiesHolder;
 import org.time2java.jpingservice.StatisticHandler;
 import org.time2java.jpingservice.dao.HostRequestDAO;
 
@@ -14,7 +15,7 @@ import org.time2java.jpingservice.dao.HostRequestDAO;
  */
 abstract public class QueueProcessor extends Thread {
 
-    protected int MAX_ELEMENTS_PEAK = 100;
+    protected int MAX_ELEMENTS_PEAK = PropertiesHolder.getIntProperties("MAX_ELEMENTS_PEAK", 1000);
     protected HostRequestDAO dao;
     protected final ConcurrentLinkedQueue<HostRequest> requestQueue;
 

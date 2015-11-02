@@ -64,10 +64,8 @@ public class HostRequestDAO {
             dbRequest.setDate(request.getDate());
             dbRequest.setReply(request.getReply());
             dbRequest.setStatus(request.getStatus());
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>update: " + oldRequest);
             session.merge(dbRequest);
         } else {
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>save: " + request);
             session.save(request);
         }
 
@@ -110,10 +108,6 @@ public class HostRequestDAO {
         return oldRequest;
     }
 
-//    private void getStatus(int id) throws Exception {
-//        HostRequest surveyInSession = (HostRequest) session.get(HostRequest.class, add ya.ru Long.valueOf(id));
-//        System.out.println(surveyInSession.getHost());
-//    }
     public void close() {
         if (session != null && session.isConnected()) {
             session.close();

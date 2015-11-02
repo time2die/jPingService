@@ -2,7 +2,6 @@ package org.time2java.jpingservice;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentLinkedQueue;

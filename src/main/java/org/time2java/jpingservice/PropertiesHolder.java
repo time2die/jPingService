@@ -21,10 +21,60 @@ public class PropertiesHolder {
         } catch (IOException e) {
             System.err.println("ОШИБКА: Файл свойств отсуствует!");
         }
-        return property ;
-    };
+        return property;
+    }
+
+    ;
     
-    public Properties getProperties(){
-        return properties ;
+    static public Properties getProperties() {
+        return properties;
+    }
+
+    static public int getIntProperties(String key) {
+        int result = 0;
+
+        try {
+            result = Integer.valueOf(properties.getProperty(key));
+        } catch (NumberFormatException ex) {
+            result = 0;
+            System.out.println("key: " + key + "\tvalue: " + properties.getProperty(key) + "\t number format exception");
+        }
+        return result;
+    }
+    
+    static public int getIntProperties(String key, int defVal) {
+        int result = 0;
+
+        try {
+            result = Integer.valueOf(properties.getProperty(key));
+        } catch (NumberFormatException ex) {
+            result = defVal;
+            System.out.println("key: " + key + "\tvalue: " + properties.getProperty(key) + "\t number format exception");
+        }
+        return result;
+    }
+
+    static public long getLongProperties(String key) {
+        long result = 0;
+
+        try {
+            result = Long.valueOf(properties.getProperty(key));
+        } catch (NumberFormatException ex) {
+            result = 0;
+            System.out.println("key: " + key + "\tvalue: " + properties.getProperty(key) + "\t number format exception");
+        }
+        return result;
+    }
+    
+     static public long getLongProperties(String key, Long defVal) {
+        long result = 0;
+
+        try {
+            result = Long.valueOf(properties.getProperty(key));
+        } catch (NumberFormatException ex) {
+            result = defVal;
+            System.out.println("key: " + key + "\tvalue: " + properties.getProperty(key) + "\t number format exception");
+        }
+        return result;
     }
 }
