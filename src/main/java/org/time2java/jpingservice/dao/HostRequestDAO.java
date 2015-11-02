@@ -37,12 +37,12 @@ public class HostRequestDAO {
 
     public HostRequestDAO() {
         sessionFactory = new Configuration().configure().buildSessionFactory();
-        
+
         session = sessionFactory.openSession();
     }
 
     public void addOrUpdateRequest(HostRequest request) {
-        
+
         HostRequest oldRequest = null;
         try {
             oldRequest = (HostRequest) session.createCriteria(HostRequest.class)
@@ -56,10 +56,10 @@ public class HostRequestDAO {
         }
 
         Transaction tx = session.beginTransaction();
-        
+
         if (oldRequest != null) {
-            HostRequest dbRequest = session.load(HostRequest.class, oldRequest.getId()) ;
-            
+            HostRequest dbRequest = session.load(HostRequest.class, oldRequest.getId());
+
             dbRequest.setCode(request.getCode());
             dbRequest.setDate(request.getDate());
             dbRequest.setReply(request.getReply());
@@ -71,44 +71,32 @@ public class HostRequestDAO {
             session.save(request);
         }
 
-//        session.saveOrUpdate(request);
         tx.commit();
         session.flush();
-//        session.close() ;
+
     }
 
     public HostRequest getAddedRequest(HostRequest lookingFor) {
-//        session = sessionFactory.openSession();
         HostRequest oldRequest = null;
-        try {
-            oldRequest = (HostRequest) session.createCriteria(HostRequest.class)
-                    .add(Restrictions.eq("host", lookingFor.getHost()))
-                    .add(Restrictions.eq("port", lookingFor.getPort()))
-                    .add(Restrictions.eq("path", lookingFor.getPath()))
-                    .add(Restrictions.eq("status", RequestStatus.ADDED))
-                    .addOrder(Order.desc("date")).uniqueResult();
-        } catch (HibernateException ex) {
-            ex.printStackTrace();
-        }finally{
-//            session.close(); 
-        }
+
+        oldRequest = (HostRequest) session.createCriteria(HostRequest.class)
+                .add(Restrictions.eq("host", lookingFor.getHost()))
+                .add(Restrictions.eq("port", lookingFor.getPort()))
+                .add(Restrictions.eq("path", lookingFor.getPath()))
+                .add(Restrictions.eq("status", RequestStatus.ADDED))
+                .addOrder(Order.desc("date")).uniqueResult();
 
         return oldRequest;
     }
 
     public List<HostRequest> getAllAdededRequest() {
-        try {
-//            session = sessionFactory.openSession();
-            return (List<HostRequest>) session.createCriteria(HostRequest.class)
-                    .add(Restrictions.eq("status", RequestStatus.ADDED))
-                    .addOrder(Order.desc("date")).list();
-        } finally {
-//            session.close();
-        }
+        return (List<HostRequest>) session.createCriteria(HostRequest.class)
+                .add(Restrictions.eq("status", RequestStatus.ADDED))
+                .addOrder(Order.desc("date")).list();
+
     }
 
     public HostRequest getRequest(HostRequest lookingFor) {
-//        session = sessionFactory.openSession() ;
         HostRequest oldRequest = null;
         try {
             oldRequest = (HostRequest) session.createCriteria(HostRequest.class).add(Restrictions.eq("host", lookingFor.getHost()))
@@ -118,10 +106,7 @@ public class HostRequestDAO {
                     .addOrder(Order.desc("date")).uniqueResult();
         } catch (HibernateException ex) {
             ex.printStackTrace();
-        }finally{
-//            session.close();
         }
-
         return oldRequest;
     }
 
@@ -129,12 +114,11 @@ public class HostRequestDAO {
 //        HostRequest surveyInSession = (HostRequest) session.get(HostRequest.class, add ya.ru Long.valueOf(id));
 //        System.out.println(surveyInSession.getHost());
 //    }
-
     public void close() {
-        if(session != null &&  session.isConnected()){
+        if (session != null && session.isConnected()) {
             session.close();
         }
-        
+
         sessionFactory.close();
     }
 }
