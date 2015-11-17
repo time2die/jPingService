@@ -12,6 +12,10 @@ public class RegisterProcessor extends QueueProcessor {
 
     private AddProcessor ap;
 
+    public RegisterProcessor(AddProcessor ap) {
+        this(new ConcurrentLinkedQueue<>(), ap);
+    }
+
     public RegisterProcessor(ConcurrentLinkedQueue queue, AddProcessor ap) {
         super("Register procesor", queue);
 

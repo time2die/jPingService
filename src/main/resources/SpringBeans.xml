@@ -1,0 +1,13 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="addProcessor" class="org.time2java.jpingservice.threads.AddProcessor" init-method="start"/>
+        <bean id="registerProcessor" class="org.time2java.jpingservice.threads.RegisterProcessor" init-method="start">
+           <constructor-arg>
+               <ref bean="addProcessor" />
+           </constructor-arg>
+        </bean>
+        <bean id="showProcessor" class="org.time2java.jpingservice.threads.ShowProcessor" init-method="start"/>
+</beans>

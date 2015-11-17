@@ -19,6 +19,10 @@ abstract public class QueueProcessor extends Thread {
     protected HostRequestDAO dao;
     protected final ConcurrentLinkedQueue<HostRequest> requestQueue;
 
+    public QueueProcessor(){
+        this("QueueProcessor", new ConcurrentLinkedQueue<HostRequest>()) ;
+    }
+    
     public QueueProcessor(String name, ConcurrentLinkedQueue queue) {
         super(name);
         requestQueue = queue;

@@ -10,12 +10,16 @@ import org.time2java.jpingservice.threads.AddProcessor;
 import org.time2java.jpingservice.threads.RegisterProcessor;
 import org.time2java.jpingservice.threads.ShowProcessor;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 /**
  * @author time2java
  */
 public class JPingService {
 
     public static void main(String[] args) throws Exception {
+        
         new JPingService().work();
     }
 
@@ -24,14 +28,12 @@ public class JPingService {
     private RegisterProcessor rp;
 
     public JPingService() {
-        nWorker = new AddProcessor(new ConcurrentLinkedQueue<>());
-        nWorker.start();
-
-        rs = new ShowProcessor(new ConcurrentLinkedQueue<>());
-        rs.start();
-
-        rp = new RegisterProcessor(new ConcurrentLinkedQueue(), nWorker);
-        rp.start();
+        
+        ApplicationContext app = new ClassPathXmlApplicationContext("SpringBeans.xml") ;
+        
+        nWorker = (AddProcessor) app.getBean("addProcessor");
+        rs =(ShowProcessor)app.getBean("showProcessor") ;
+        rp = (RegisterProcessor) app.getBean("registerProcessor");
 
         initAfterShutDown();
     }
@@ -81,6 +83,9 @@ public class JPingService {
                     break;
                 case "show":
                     rs.addHostToQueue((parseHostRequestAndValidate(st)));
+                    break;
+                case "status":
+                    System.out.println(">status: "+ (rp.isAlive()&&rs.isAlive()&&nWorker.isAlive()));
                     break;
                 case "quit":
                     processQuit(scanner);

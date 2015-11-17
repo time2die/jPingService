@@ -10,6 +10,10 @@ import org.time2java.jpingservice.RequestStatus;
  */
 public class ShowProcessor extends QueueProcessor{
 
+    public ShowProcessor(){
+        this(new ConcurrentLinkedQueue<Object>()) ;
+    }
+    
     public ShowProcessor(ConcurrentLinkedQueue queue) {
         super("ShowProcessor", queue);
     }

@@ -20,6 +20,11 @@ public class AddProcessor extends QueueProcessor {
 
     private final HttpClient client;
 
+    public AddProcessor(){
+        this(new ConcurrentLinkedQueue<HostRequest>()) ;
+    }
+    
+    
     public AddProcessor(ConcurrentLinkedQueue<HostRequest> queue) {
         super("NetWorker", queue);
 
