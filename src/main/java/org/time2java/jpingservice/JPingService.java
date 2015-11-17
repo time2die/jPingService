@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import org.time2java.jpingservice.dao.HostRequestDAO;
 import org.time2java.jpingservice.threads.AddProcessor;
 import org.time2java.jpingservice.threads.RegisterProcessor;
@@ -20,7 +19,11 @@ public class JPingService {
 
     public static void main(String[] args) throws Exception {
         
-        new JPingService().work();
+        ApplicationContext app = new ClassPathXmlApplicationContext("SpringBeans.xml") ;
+        JPingService jps = (JPingService) app.getBean(JPingService.class) ;
+//        jps.work() ;
+        
+//        new JPingService().work();
     }
 
     private AddProcessor nWorker;
@@ -28,19 +31,24 @@ public class JPingService {
     private RegisterProcessor rp;
 
     public JPingService() {
-        
-        ApplicationContext app = new ClassPathXmlApplicationContext("SpringBeans.xml") ;
-        
-        nWorker = (AddProcessor) app.getBean("addProcessor");
-        rs =(ShowProcessor)app.getBean("showProcessor") ;
-        rp = (RegisterProcessor) app.getBean("registerProcessor");
-
-        initAfterShutDown();
     }
 
     public void work() {
+        initAfterShutDown();
         printHelp();
         readAndProcessCommands();
+    }
+
+    public void setnWorker(AddProcessor nWorker) {
+        this.nWorker = nWorker;
+    }
+
+    public void setRs(ShowProcessor rs) {
+        this.rs = rs;
+    }
+
+    public void setRp(RegisterProcessor rp) {
+        this.rp = rp;
     }
 
     private void printHelp() {

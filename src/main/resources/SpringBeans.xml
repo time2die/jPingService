@@ -3,6 +3,11 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
+    <bean id="jps" class="org.time2java.jpingservice.JPingService" init-method="work" >
+    <property name="nWorker" ref="addProcessor"/>
+    <property name="rp" ref="registerProcessor"/>
+    <property name="rs" ref="showProcessor"/>
+    </bean>
 	<bean id="addProcessor" class="org.time2java.jpingservice.threads.AddProcessor" init-method="start"/>
         <bean id="registerProcessor" class="org.time2java.jpingservice.threads.RegisterProcessor" init-method="start">
            <constructor-arg>
